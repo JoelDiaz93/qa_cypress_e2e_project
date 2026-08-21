@@ -13,19 +13,20 @@ describe('Settings page', () => {
   let user;
 
   beforeEach(() => {
-    cy.task('db:clear');
-    cy.task('generateUser')
+    return cy.task('db:clear')
+      .then(() => cy.task('generateUser'))
       .then((generatedUser) => {
         user = generatedUser;
+
         return cy.register(user.email, user.username, user.password);
       })
       .then(() => cy.login(user.email, user.password));
-    settingsPage.visit();
   });
 
   it('should provide an ability to update username', () => {
     const username = `updated-${user.username}`;
 
+    settingsPage.visit();
     settingsPage.updateUsername(username);
 
     homePage.assertHeaderContainUsername(username);
@@ -34,6 +35,7 @@ describe('Settings page', () => {
   it('should provide an ability to update bio', () => {
     const bio = 'QA engineer who enjoys reliable end-to-end tests.';
 
+    settingsPage.visit();
     settingsPage.updateBio(bio);
 
     settingsPage.bioField.should('have.value', bio);
@@ -42,6 +44,7 @@ describe('Settings page', () => {
   it('should provide an ability to update an email', () => {
     const email = `updated-${user.email}`;
 
+    settingsPage.visit();
     settingsPage.updateEmail(email);
 
     settingsPage.emailField.should('have.value', email);
@@ -50,6 +53,7 @@ describe('Settings page', () => {
   it('should provide an ability to update password', () => {
     const newPassword = 'Updated9Password!';
 
+    settingsPage.visit();
     settingsPage.updatePassword(newPassword);
     settingsPage.logout();
     signInPage.visit();

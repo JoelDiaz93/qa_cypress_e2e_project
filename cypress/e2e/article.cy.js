@@ -10,19 +10,22 @@ describe('Article', () => {
   let article;
 
   beforeEach(() => {
-    cy.task('db:clear');
-    cy.task('generateUser')
+    return cy.task('db:clear')
+      .then(() => cy.task('generateUser'))
       .then((generatedUser) => {
         user = generatedUser;
+
         return cy.register(user.email, user.username, user.password);
       })
       .then((registeredUser) => {
         user.id = registeredUser.id;
+
         return cy.login(user.email, user.password);
+      })
+      .then(() => cy.task('generateArticle'))
+      .then((generatedArticle) => {
+        article = generatedArticle;
       });
-    cy.task('generateArticle').then((generatedArticle) => {
-      article = generatedArticle;
-    });
   });
 
   it('should be created using New Article form', () => {
